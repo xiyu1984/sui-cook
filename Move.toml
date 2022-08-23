@@ -1,0 +1,9 @@
+[package]
+name = "cook_sui"
+version = "0.0.1"
+
+[dependencies]
+Sui = { local = "../sui/crates/sui-framework" }
+
+[addresses]
+cook_sui = "0x0"
