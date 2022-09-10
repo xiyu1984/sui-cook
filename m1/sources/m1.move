@@ -1,4 +1,4 @@
-module cook_sui::m1 {
+module cook_m1::m1 {
     use sui::object::{Self, UID};
     use sui::tx_context::TxContext;
 
@@ -84,7 +84,7 @@ module cook_sui::m1 {
     public fun test_sword_create() {
         use sui::tx_context;
         use sui::transfer;
-        use std::debug;
+        // use std::debug;
 
         // create a dummy TxContext for testing
         let ctx = tx_context::dummy();
@@ -96,10 +96,10 @@ module cook_sui::m1 {
             strength: 7,
         };
 
-        let myBytes: vector<u8> = b"Hello";
-        let myBytes2 = x"11223344";
-        debug::print<vector<u8>>(&myBytes);
-        debug::print<vector<u8>>(&myBytes2);
+        // let myBytes: vector<u8> = b"Hello";
+        // let myBytes2 = x"11223344";
+        // debug::print<vector<u8>>(&myBytes);
+        // debug::print<vector<u8>>(&myBytes2);
 
         // check if accessor functions return correct values
         assert!(magic(&sword) == 42 && strength(&sword) == 7, 99);
@@ -111,7 +111,7 @@ module cook_sui::m1 {
     #[test]
     public fun test_transaction() {
         use sui::test_scenario;
-        use std::debug;
+        // use std::debug;
 
         let admin = @0xABBA;
         let caster = @0xCAFE;
@@ -130,7 +130,7 @@ module cook_sui::m1 {
             let asso = test_scenario::take_owned<Association>(scenario);
             // create the license and transfer it to the caster
             publish_license(&mut asso, caster, test_scenario::ctx(scenario));
-            debug::print<u64>(&get_license_count(&asso));
+            // debug::print<u64>(&get_license_count(&asso));
 
             test_scenario::return_owned(scenario, asso);
         };
@@ -142,7 +142,7 @@ module cook_sui::m1 {
 
             // create a sword to the `sword holder` by the caster
             sword_create(&mut license, 99, 99, sword_holder, test_scenario::ctx(scenario));
-            debug::print<u64>(&get_sword_count(&license));
+            // debug::print<u64>(&get_sword_count(&license));
 
             test_scenario::return_owned(scenario, license);
         };
