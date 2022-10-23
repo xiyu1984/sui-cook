@@ -118,53 +118,57 @@ module cook_m1::m1 {
         let sword_holder = @0xFACE;
         let killer = @0xFFAA;
 
+        let scenario_val = test_scenario::begin(admin);
+        let scenario = &mut scenario_val;
         // first transaction executed by admin
-        let scenario = &mut test_scenario::begin(&admin);
+        test_scenario::next_tx(scenario, admin);
         {
             init(test_scenario::ctx(scenario));
         };
 
         // next transaction executed by admin
-        test_scenario::next_tx(scenario, &admin);
+        test_scenario::next_tx(scenario, admin);
         {
-            let asso = test_scenario::take_owned<Association>(scenario);
+            let asso = test_scenario::take_from_sender<Association>(scenario);
             // create the license and transfer it to the caster
             publish_license(&mut asso, caster, test_scenario::ctx(scenario));
             // debug::print<u64>(&get_license_count(&asso));
 
-            test_scenario::return_owned(scenario, asso);
+            test_scenario::return_to_sender(scenario, asso);
         };
 
         // next transaction executed by caster
-        test_scenario::next_tx(scenario, &caster);
+        test_scenario::next_tx(scenario, caster);
         {
-            let license = test_scenario::take_owned<CastLicense>(scenario);
+            let license = test_scenario::take_from_sender<CastLicense>(scenario);
 
             // create a sword to the `sword holder` by the caster
             sword_create(&mut license, 99, 99, sword_holder, test_scenario::ctx(scenario));
             // debug::print<u64>(&get_sword_count(&license));
 
-            test_scenario::return_owned(scenario, license);
+            test_scenario::return_to_sender(scenario, license);
         };
 
         // next transaction executed by the sword holder
-        test_scenario::next_tx(scenario, &sword_holder);
+        test_scenario::next_tx(scenario, sword_holder);
         {
             // extract the sword owned by the initial owner
-            let sword = test_scenario::take_owned<Sword>(scenario);
+            let sword = test_scenario::take_from_sender<Sword>(scenario);
             // transfer the sword to the final owner
             sword_transfer(sword, killer, test_scenario::ctx(scenario));
         };
 
         // third transaction executed by the final sword owner
-        test_scenario::next_tx(scenario, &killer);
+        test_scenario::next_tx(scenario, killer);
         {
             // extract the sword owned by the final owner
-            let sword = test_scenario::take_owned<Sword>(scenario);
+            let sword = test_scenario::take_from_sender<Sword>(scenario);
             // verify that the sword has expected properties
             assert!(magic(&sword) == 99 && strength(&sword) == 99, 1);
             // return the sword to the object pool (it cannot be simply "dropped")
-            test_scenario::return_owned(scenario, sword)
-        }
+            test_scenario::return_to_sender(scenario, sword)
+        };
+
+        test_scenario::end(scenario_val);
     }
 }

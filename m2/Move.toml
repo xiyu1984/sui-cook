@@ -3,7 +3,7 @@ name = "cook_m2"
 version = "0.0.1"
 
 [dependencies]
-Sui = { local = "../../sui/crates/sui-framework" }
+Sui = { local = "../../sui/sui/crates/sui-framework" }
 
 [addresses]
 cook_m2 = "0x0"
