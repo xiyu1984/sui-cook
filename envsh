@@ -1,0 +1,51 @@
+
+sui client active-address
+
+sui client addresses
+
+sui client switch --address 0x8be90fc15b3a923f8d67bbe645e1db04f3261694
+
+sui client objects --address 0x8be90fc15b3a923f8d67bbe645e1db04f3261694
+
+sui client gas --address 0x8be90fc15b3a923f8d67bbe645e1db04f3261694
+
+# Transfer
+sui client merge-coin --primary-coin 0x8be90fc15b3a923f8d67bbe645e1db04f3261694 --coin-to-merge 0x8fa041842788dfc4209c0bc7b06d0c688cf1b2fc --gas-budget 1000
+
+sui client split-coin --coin-id 0x8be90fc15b3a923f8d67bbe645e1db04f3261694 --amounts 10000 --gas-budget 1000
+
+sui client transfer-coin --to 0x8be90fc15b3a923f8d67bbe645e1db04f3261694 --coin-object-id 0xec13c2a20f0c1956631afcfaff0c3f4753dda5ce --gas-budget 100
+
+## Transfer by function
+sui client call --function transfer --module sui --package 0x2 --args 0x4a42bdca9749ee87aa7debb7f5c140ab767f5310 0x8be90fc15b3a923f8d67bbe645e1db04f3261694 --gas-budget 1000
+
+# Create new Project
+mkdir -p cook-sui/sources 
+touch cook-sui/sources/m1.move 
+touch cook-sui/Move.toml
+
+# Publish
+sui client publish --gas-budget 30000
+
+# funcion call
+sui client call --function publish_license --module m1 --package 0x3032906df65b2c4d3f0852a75f75b9515dae7c76 --args \"0xc3e04c76061ea66ca31cd65fd6c360875b857f53\" \"0x4f2af17662528962a1cb77d6032a757dbf974677\" --gas-budget 30000
+
+# switch active account first
+sui client call --function sword_create --module m1 --package 0x3032906df65b2c4d3f0852a75f75b9515dae7c76 --args \"0xc3f73446cc85f5b81b2470a01298703fa4927494\" 99 88 \"0x4f2af17662528962a1cb77d6032a757dbf974677\" --gas-budget 30000
+
+sui client call --function sword_transfer --module m1 --package 0x3032906df65b2c4d3f0852a75f75b9515dae7c76 --args \"0x0192e3a5a988009bcacbfdb3d2d7d9af36453091\" \"0xaf5d6ed181ca35e753c03abcffcd09a3ab628bfe\" --gas-budget 30000
+
+# m2
+# package id:   0xc13c17734a2399e090a52e9a34b13c5a8898f8e4
+# parent id:    0xa5e065542c67bb2078447b73f454a137f115c966
+# child id:     0x0ab3c93628d6bd209456ab23b13d4741bfcc3801
+
+sui client call --function create_parent_and_child --module m2 --package 0xc13c17734a2399e090a52e9a34b13c5a8898f8e4 --gas-budget 30000
+
+# sui client call get_value_child --module m2 --package 0xc13c17734a2399e090a52e9a34b13c5a8898f8e4
+
+sui client call --function set_value_child --module m2 --package 0xc13c17734a2399e090a52e9a34b13c5a8898f8e4 --args \"0xa5e065542c67bb2078447b73f454a137f115c966\" \"0x0ab3c93628d6bd209456ab23b13d4741bfcc3801\" --gas-budget 30000
+
+sui client call --function delete_parent --module m2 --package 0xc13c17734a2399e090a52e9a34b13c5a8898f8e4 --args \"0xa5e065542c67bb2078447b73f454a137f115c966\" \"0x0ab3c93628d6bd209456ab23b13d4741bfcc3801\" --gas-budget 30000
+
+sui client object --id 0x0ab3c93628d6bd209456ab23b13d4741bfcc3801 --json
