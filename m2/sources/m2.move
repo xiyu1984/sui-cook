@@ -57,43 +57,52 @@ module cook_m2::m2 {
         // let admin = @0xABBA;
         let owner = @0xCAFE;
 
-        let scenario = &mut test_scenario::begin(&owner);
+        let scenario_val = test_scenario::begin(owner);
+        let scenario = &mut scenario_val;
+
+        test_scenario::next_tx(scenario, owner);
+        {
+            init(test_scenario::ctx(scenario));
+        };
+
+        test_scenario::next_tx(scenario, owner);
         {
             create_parent_and_child(test_scenario::ctx(scenario));
         };
 
-        test_scenario::next_tx(scenario, &owner);
+        test_scenario::next_tx(scenario, owner);
         {
-            let parent = test_scenario::take_owned<Parent>(scenario);
-            // let parent_id = &parent.id;
-            // let child_id = option::borrow<ID>(&parent.child_id);
-            // debug::print<UID>(&parent.id);
-            // debug::print<ID>(option::borrow<ID>(&parent.child_id));
-            let child = test_scenario::take_child_object<Parent, Child>(scenario, &parent);
+            let parent = test_scenario::take_from_sender<Parent>(scenario);
+            
+            //let child = test_scenario::take_child_object<Parent, Child>(scenario, &parent);
+
             assert!(option::is_some(&parent.child_id), 0);
             let _child_id = option::extract(&mut parent.child_id);
             assert!(option::is_none(&parent.child_id), 0);
             
-            assert!(get_value_child(&child) == 11223344, 0);
-            set_value_child(&mut parent, &mut child, test_scenario::ctx(scenario));
-            assert!(get_value_child(&child) == 22446688, 0);
+            // let child = test_scenario::take_from_sender_by_id<Child>(scenario, _child_id);
 
+            // assert!(get_value_child(&child) == 11223344, 0);
+            // set_value_child(&mut parent, &mut child, test_scenario::ctx(scenario));
+            // assert!(get_value_child(&child) == 22446688, 0);
 
-            transfer::transfer_to_object(child, &mut parent);
-            test_scenario::return_owned(scenario, parent);
+            // transfer::transfer_to_object(child, &mut parent);
+
+            test_scenario::return_to_sender(scenario, parent);
         };
 
-        test_scenario::next_tx(scenario, &owner);
+        test_scenario::next_tx(scenario, owner);
         {
-            let parent = test_scenario::take_owned<Parent>(scenario);
-            let child = test_scenario::take_child_object<Parent, Child>(scenario, &parent);
+            let parent = test_scenario::take_from_sender<Parent>(scenario);
 
             // `Parant.child_id` is an user defined member, 
             // and the underly implementation has its own child management mechanism
             assert!(option::is_none(&parent.child_id), 0);
 
-            transfer::transfer_to_object(child, &mut parent);
-            test_scenario::return_owned(scenario, parent);
+            // transfer::transfer_to_object(child, &mut parent);
+            test_scenario::return_to_sender(scenario, parent);
         };
+
+        test_scenario::end(scenario_val);
     }
 }
