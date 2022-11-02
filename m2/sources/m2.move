@@ -3,6 +3,7 @@ module cook_m2::m2 {
     use sui::object::{Self, ID, UID};
     use sui::tx_context::{Self, TxContext};
     use sui::transfer;
+    use sui::dynamic_object_field::{Self};
 
     struct Parent has key {
         id: UID,
@@ -22,7 +23,7 @@ module cook_m2::m2 {
         let parent_id = object::new(ctx);
         let child = Child{id: object::new(ctx), v: 11223344};
         let c_id = object::id(&child);
-        transfer::transfer_to_object_id(child, &mut parent_id);
+        dynamic_object_field::add(&mut parent_id, b"firstChild", child);
         let parent = Parent {
             id: parent_id, 
             child_id: option::some(c_id),
@@ -34,7 +35,7 @@ module cook_m2::m2 {
         // transfer::transfer(child, tx_context::sender(ctx));
     }
 
-    public entry fun set_value_child(_parent: &mut Parent, child: &mut Child, _ctx: &mut TxContext) {
+    public entry fun set_value_child(child: &mut Child, _ctx: &mut TxContext) {
         child.v = child.v * 2; 
     }
 
@@ -74,19 +75,46 @@ module cook_m2::m2 {
         {
             let parent = test_scenario::take_from_sender<Parent>(scenario);
             
-            //let child = test_scenario::take_child_object<Parent, Child>(scenario, &parent);
+            let child = dynamic_object_field::borrow_mut<vector<u8>, Child>(&mut parent.id, b"firstChild");
 
-            assert!(option::is_some(&parent.child_id), 0);
+            assert!(option::is_some(&mut parent.child_id), 0);
             let _child_id = option::extract(&mut parent.child_id);
-            assert!(option::is_none(&parent.child_id), 0);
+            assert!(option::is_none(&mut parent.child_id), 0);
             
-            // let child = test_scenario::take_from_sender_by_id<Child>(scenario, _child_id);
+            assert!(get_value_child(child) == 11223344, 0);
+            set_value_child(child, test_scenario::ctx(scenario));
+            assert!(get_value_child(child) == 22446688, 0);
 
-            // assert!(get_value_child(&child) == 11223344, 0);
-            // set_value_child(&mut parent, &mut child, test_scenario::ctx(scenario));
-            // assert!(get_value_child(&child) == 22446688, 0);
+            // option::fill(&mut parent.child_id, _child_id);
 
-            // transfer::transfer_to_object(child, &mut parent);
+            test_scenario::return_to_sender(scenario, parent);
+        };
+
+        test_scenario::next_tx(scenario, owner);
+        {
+            let parent = test_scenario::take_from_sender<Parent>(scenario);
+
+            let child = dynamic_object_field::remove<vector<u8>, Child>(&mut parent.id, b"firstChild");
+            let val = get_value_child(&mut child);
+            set_value_child(&mut child, test_scenario::ctx(scenario));
+            assert!(get_value_child(&mut child) == val * 2, 1);
+
+            // This will abort as `assert!(was_taken_from_address(account, id), ECantReturnObject);`
+            // test_scenario::return_to_sender(scenario, child);
+
+            transfer::transfer(child, tx_context::sender(test_scenario::ctx(scenario)));
+            test_scenario::return_to_sender(scenario, parent);
+        };
+
+        test_scenario::next_tx(scenario, owner);
+        {
+            let parent = test_scenario::take_from_sender<Parent>(scenario);
+
+            // This will abort with `assert!(option::is_some(&field.value), EFieldDoesNotExist);`
+            // let child = dynamic_object_field::remove<vector<u8>, Child>(&mut parent.id, b"firstChild");
+
+            let child = test_scenario::take_from_sender<Child>(scenario);
+            dynamic_object_field::add(&mut parent.id, b"firstChild", child);
 
             test_scenario::return_to_sender(scenario, parent);
         };
@@ -102,6 +130,8 @@ module cook_m2::m2 {
             // transfer::transfer_to_object(child, &mut parent);
             test_scenario::return_to_sender(scenario, parent);
         };
+
+
 
         test_scenario::end(scenario_val);
     }
