@@ -159,3 +159,24 @@ module cook_m3::m3 {
         test_scenario::end(scenario_val);
     }
 }
+
+// test dependency cycle
+// module cook_m3::a {
+//     use cook_m3::b;
+
+//     public fun a() {}
+
+//     fun call_b() {
+//         b::b();
+//     }
+// }
+
+// module cook_m3::b {
+//     use cook_m3::a;
+
+//     public fun b() {}
+
+//     fun call_a() {
+//         a::a();
+//     }
+// }
