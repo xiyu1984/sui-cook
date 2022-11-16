@@ -54,6 +54,11 @@ module cook_m3::m3 {
         transfer::transfer(ink, tx_context::sender(ctx));
     }
 
+    public entry fun delete_ink(ink: Ink, _: &mut TxContext) {
+        let Ink {id, color: _} = ink;
+        object::delete(id);
+    }
+
     public entry fun mint_blank_picture(ctx: &mut TxContext) {
         let pic = Picture {
             id: object::new(ctx),

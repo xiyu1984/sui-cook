@@ -2,15 +2,17 @@
 
 # ink and pallet
 ## the `shared_id` shold be remembered, which is just like the `contract address` on smart contract-based chains
-shared_id: 0x9d2882e8e2a412bbab0c4f4eaa013418b45bc002
+shared_id: 0x4a2cbeca018cbde802304062c1487d006b9f354c
 
-package: 0x73183b45ffb2e6dd937d9855ab35fadbca5bd4c2
+package: 0x492fd66d6ef28cdd72658a948ad9618d16684ba0
 
-sui client call --function mint_blank_picture --module m3 --package 0x73183b45ffb2e6dd937d9855ab35fadbca5bd4c2 --gas-budget 30000
+sui client call --function mint_blank_picture --module m3 --package 0x492fd66d6ef28cdd72658a948ad9618d16684ba0 --gas-budget 30000
 
-sui client call --function mint_ink --module m3 --package 0x73183b45ffb2e6dd937d9855ab35fadbca5bd4c2 --args 1 --gas-budget 30000
+sui client call --function mint_ink --module m3 --package 0x492fd66d6ef28cdd72658a948ad9618d16684ba0 --args 1 --gas-budget 30000
+
+sui client call --function delete_ink --module m3 --package 0x492fd66d6ef28cdd72658a948ad9618d16684ba0 --args \"0x18d5fa8fd13206cf9a04b2c16992186edf1368f3\" --gas-budget 30000
 
 ## args: 1st: pallet object id; 2nd: picture object id; 3rd: ink object id
-sui client call --function draw_picture --module m3 --package 0x73183b45ffb2e6dd937d9855ab35fadbca5bd4c2 --args \"0x9d2882e8e2a412bbab0c4f4eaa013418b45bc002\" \"0x4be21be36ae19b0bf763fd3332989202d4317b76\" \"0x05d347d894607155b0a04b2b1b3a574df75ab822\" --gas-budget 30000
+sui client call --function draw_picture --module m3 --package 0x492fd66d6ef28cdd72658a948ad9618d16684ba0 --args \"0x4a2cbeca018cbde802304062c1487d006b9f354c\" \"0x726ea11e6f461fee04bd0224b49355bb7eb6e262\" \"0x9fd6e15a69781713db42e425fc225d3f5b1ebd57\" --gas-budget 30000
 
 sui client object --id <> --json
