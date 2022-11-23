@@ -1,8 +1,9 @@
 module cook_m3::m3 {
-    use sui::object::{Self, UID};
+    use sui::object::{Self, ID, UID};
     use sui::tx_context::{Self, TxContext};
     use sui::transfer;
     use sui::dynamic_object_field;
+    use sui::event;
 
     const COLOR_RED: u64 = 0;
     public fun red(): u64 {COLOR_RED}
@@ -34,8 +35,23 @@ module cook_m3::m3 {
         // dynamic object `Ink`
     }
 
+    struct EventOperatePic has copy, drop {
+        id: ID,
+        randomID: u64,
+    }
+
     /// init
     fun init(ctx: &mut TxContext) {
+        let pallet = Pallet {
+            id: object::new(ctx),
+            water: WATER_INIT,
+        };
+
+        transfer::share_object(pallet);
+    }
+
+    #[test_only]
+    fun test_init(ctx: &mut TxContext) {
         let pallet = Pallet {
             id: object::new(ctx),
             water: WATER_INIT,
@@ -65,7 +81,14 @@ module cook_m3::m3 {
             mix_size: 0,
         };
 
+        let suiID = object::uid_to_inner(&pic.id);
+
         transfer::transfer(pic, tx_context::sender(ctx));
+
+        event::emit(EventOperatePic{
+            id: suiID,
+            randomID: tx_context::epoch(ctx),
+        });
     }
 
     /// operations
@@ -92,7 +115,7 @@ module cook_m3::m3 {
 
         test_scenario::next_tx(scenario, alice);
         {
-            init(test_scenario::ctx(scenario));
+            test_init(test_scenario::ctx(scenario));
         };
 
         test_scenario::next_tx(scenario, alice);
