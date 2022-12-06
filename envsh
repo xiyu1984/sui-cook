@@ -7,9 +7,10 @@ sui client new-address {ed25519 | secp256k1}
 
 sui client switch --address 0xd9bde7af25925c60b651f5dc7766d838d0ea473a
 
-sui client objects --address 0xd9bde7af25925c60b651f5dc7766d838d0ea473a
+# sui client objects --address 0xd9bde7af25925c60b651f5dc7766d838d0ea473a
+sui client objects 0xd9bde7af25925c60b651f5dc7766d838d0ea473a
 
-sui client gas --address 0xd9bde7af25925c60b651f5dc7766d838d0ea473a
+sui client gas 0xd9bde7af25925c60b651f5dc7766d838d0ea473a
 
 # Transfer
 sui client merge-coin --primary-coin 0x8be90fc15b3a923f8d67bbe645e1db04f3261694 --coin-to-merge 0x8fa041842788dfc4209c0bc7b06d0c688cf1b2fc --gas-budget 1000
