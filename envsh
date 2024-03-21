@@ -27,6 +27,7 @@ mkdir -p cook-sui/sources
 touch cook-sui/sources/m1.move 
 touch cook-sui/Move.toml
 
+
 # Publish
 sui client publish --gas-budget 30000
 
